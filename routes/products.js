@@ -44,5 +44,27 @@ router.post("/", async (req, res) => {
     }
 });
 
+//PUT an existing product
+// http://localhost:3007/api/products/:productId
+router.put("/:productId", async (req,res) => {
+    try {
+        const {error} = validateProduct(req.body)
+        if (error) return res.status(400).send(error);
+
+        let product = await Product.findByIdAndUpdate(req.params.productId, req.body, {new: true});
+        if (!product)
+        return res.status(400).send(`Product with Id of ${req.params.productId} does not exist!`);
+
+        return res.send(product);
+    } catch (error) {
+        return res.status(500).send(`Internal Server Error: ${error}`);
+    }
+})
+
+
+//DELETE an existing product
+// http://localhost:3007/api/products/:productId
+
+
 
 module.exports = router;
