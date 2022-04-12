@@ -64,6 +64,16 @@ router.put("/:productId", async (req,res) => {
 
 //DELETE an existing product
 // http://localhost:3007/api/products/:productId
+router.delete("/:productId", async (req, res) => {
+    try {
+        let product = await Product.findByIdAndDelete(req.params.productId);
+        if (!product)
+            return res.status(400).send(`Product with Id of ${req.params.productId} does not exist!`);
+        return res.status(200).send(product);
+    } catch (error) {
+        return res.status(500).send(`Internal Server Error: ${error}`);   
+    }
+})
 
 
 
