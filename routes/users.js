@@ -29,4 +29,36 @@ router.get("/", async (req, res) => {
     }
 });
 
+//POST a product to a shopping cart
+//http://localhost:3007/api/users/:userId/shoppingcart/:productId
+router.post("/:userId/shoppingcart/:productId", async (req,res) => {
+    try {
+        let user = await User.findById(req.params.userId);
+        if (!user) 
+            return res
+                .status(400)
+                .send(`User with Id ${req.params.userId} does not exist!`);
+        
+        let product = await Product.findById(req.params.productId);
+        if (!product) 
+            return res
+                .status(400)
+                .send(`Product with Id ${req.params.productId} does not exist`);
+
+        user.shoppingCart.push(product);
+        await user.save();
+        return res.send(user.shoppingCart);
+    } catch (error) {
+        return res.status(500).send(`Internal Server Error: ${error}`);
+    }
+});
+
+
+//PUT an existing product in a shopping cart
+//http://localhost:3007/api/users/:userId/shoppingcart/:productId
+
+//DELETE an existing product in a shopping cart
+//http://localhost:3007/api/users/:userId/shoppingcart/:productId
+
+
 module.exports = router;
