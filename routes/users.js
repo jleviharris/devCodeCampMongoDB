@@ -84,6 +84,26 @@ router.put("/:userId/shoppingcart/:productId", async (req, res) => {
 
 //DELETE an existing product in a shopping cart
 //http://localhost:3007/api/users/:userId/shoppingcart/:productId
+router.delete('/:userId/shoppingcart/:productId', async (req, res) => {
+    try {
+        let user = await User.findById(req.params.userId);
+        if (!user) 
+            return res
+                .status(400)
+                .send(`User with Id ${req.params.userId} does not exist!`);
 
+         let product = user.shoppingCart.id(req.params.productId);
+         if (!product) 
+            return res
+                .status(400)
+                .send(`The product does not exist in the shopping cart!`);
+
+        product = await product.remove();
+        await user.save();
+        return res.send(product);
+    } catch (error) {
+        return res.status(500).send(`Internal Server Error: ${error}`);
+    }
+});
 
 module.exports = router;
