@@ -56,6 +56,31 @@ router.post("/:userId/shoppingcart/:productId", async (req,res) => {
 
 //PUT an existing product in a shopping cart
 //http://localhost:3007/api/users/:userId/shoppingcart/:productId
+router.put("/:userId/shoppingcart/:productId", async (req, res) => {
+    try {
+        let {error} = validateProduct(req.body);
+        if (error) return res.status(400).send(`Body for user not valid! ${error}`);
+        
+        let user = await User.findById(req.params.userId);
+        if (!user) 
+            return res
+                .status(400)
+                .send(`User with Id ${req.params.userId} does not exist!`);
+
+         const product = user.shoppingCart.id(req.params.productId);
+         if (!product) return res.status(400).send(`The product does not exist in the shopping cart!`);
+         product.name = req.body.name;
+         product.description = req.body.description;
+         product.category = req.body.category;
+         product.price = req.body.price;
+
+         await user.save();
+         return res.send(product);
+    } catch (error) {
+        return res.status(500).send(`Internal Server Error: ${error}`);
+    }
+});
+
 
 //DELETE an existing product in a shopping cart
 //http://localhost:3007/api/users/:userId/shoppingcart/:productId
